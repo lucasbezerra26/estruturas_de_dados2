@@ -5,6 +5,7 @@ typedef struct{
     int **aresta; //as conexões
     int **estados;
     int *grau; //quantas aresta o vertice ja possui
+    int **pesos;
 }grafo;
 
 int verificaQtdMovimento(int *linha1, int *linha2){
@@ -53,15 +54,26 @@ grafo *gerarGrafo(){
     g->aresta = (int **)malloc(sizeof(int*) * 81);
     g->estados = (int **)malloc(sizeof(int*) * 81);
     g->grau = (int *)calloc(81, sizeof(int));
+    g->pesos = (int **)malloc(81 * sizeof(int *));
+    
     for (int i = 0; i < 81; i++){
         g->estados[i] = (int *)calloc(4, sizeof(int));
     }
     for (int i = 0; i < 81; i++){
         g->aresta[i] = (int *)calloc(3, sizeof(int));
     }
-    for(int i=0;i<81;i++)
-        for(int x=0;x<3;x++)
+    
+    for (int j = 0; j < 81; j++){
+        g->pesos[j] = (int *)malloc(3 * sizeof(int)); //fazendo a mesma coisa com os pesos
+    }
+    
+    for(int i=0;i<81;i++){
+        for(int x=0;x<3;x++){
             g->aresta[i][x] = -1;
+            g->pesos[i][x] = 1;
+        }
+    }
+
     int cont=0;
     for( int i=0; i<3; i++){    
         for( int z=0; z<3; z++){
@@ -93,6 +105,37 @@ grafo *gerarGrafo(){
     return g;
 }
 
+void dijkstra(grafo *g){
+    int n = 81;
+    int visitados[n];
+
+    for(int i = 1; i < n; i++){ // Começa em 1 pois não precisa comparar o vértice com ele mesmo
+
+        int min = -1; // Variável que guarda a posição do menor valor, inicia em -1 pois é uma posição inválida
+        unsigned long int MinValor = 4294967295; // Variável que guarda o menor valor encontrado, inicia com 'infinito', assim, sempre na primeira passada o valor será menor que esta variável
+
+        // For que percorre todas as linhas na coluna [0]
+        for(int j = 1; j < n; j++){
+            // Se o vertice ainda não foi visitado e o valor for menor que o 'MinValor'
+            if( visitados[j] == 0 && g->estados[j][0] < MinValor ){
+                   min = j; // Guarda a posição do menor
+                   MinValor = g->estados[j][0]; // Guarda o menor valor
+            }
+          }
+
+          visitados[min] = 1; // Marca o valor a posição do minimo como visitado
+
+        // For de 1 até n
+          for(int j = 1; j < n; j++){
+               // Se o valor da coluna [0] + o valor da coluna que está passando for menor que o valor da linha que está passando e coluna [0]
+               // Atualiza a primeira coluna da matriz, que será utilizado para as próximas iterações
+               if( (g->estados[min][0] + g->estados[min][j]) < g->estados[j][0] ){
+                g->estados[j][0] = g->estados[min][0] + g->estados[min][j];
+               }
+          }
+    }
+}
+
 int main(){
     grafo *g = gerarGrafo();
     for(int i=0;i<81;i++){
@@ -101,5 +144,8 @@ int main(){
             printf("%d ",g->aresta[i][x]);
         printf("\n");
     }
+
+    dijkstra(g);
+
     return 0;
 }

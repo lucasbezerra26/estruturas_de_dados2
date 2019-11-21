@@ -117,9 +117,9 @@ void dijkstra(grafo *g){
         // For que percorre todas as linhas na coluna [0]
         for(int j = 1; j < n; j++){
             // Se o vertice ainda não foi visitado e o valor for menor que o 'MinValor'
-            if( visitados[j] == 0 && g->estados[j][0] < MinValor ){
+            if( visitados[j] == 0 && g->pesos[j][0] < MinValor ){
                    min = j; // Guarda a posição do menor
-                   MinValor = g->estados[j][0]; // Guarda o menor valor
+                   MinValor = g->pesos[j][0]; // Guarda o menor valor
             }
           }
 
@@ -129,8 +129,8 @@ void dijkstra(grafo *g){
           for(int j = 1; j < n; j++){
                // Se o valor da coluna [0] + o valor da coluna que está passando for menor que o valor da linha que está passando e coluna [0]
                // Atualiza a primeira coluna da matriz, que será utilizado para as próximas iterações
-               if( (g->estados[min][0] + g->estados[min][j]) < g->estados[j][0] ){
-                g->estados[j][0] = g->estados[min][0] + g->estados[min][j];
+               if( (g->pesos[min][0] + g->pesos[min][j]) < g->pesos[j][0] ){
+                g->pesos[j][0] = g->pesos[min][0] + g->pesos[min][j];
                }
           }
     }

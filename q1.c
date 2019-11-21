@@ -21,6 +21,7 @@ int verificaQtdMovimento(int *linha1, int *linha2){
 }
 
 int verificaMoverOrigem(int *linha1, int *linha2){
+    // se não há um disco menor em cima do disco que irá mover 
     int cont=0;
     for(int i=0;i<4;i++){
         if(linha1[i] != linha2[i]){
@@ -34,9 +35,7 @@ int verificaMoverOrigem(int *linha1, int *linha2){
 }
 
 int verificaMoverDestino(int *linha1, int *linha2){
-    /*
-    Se não existe um disco menor 
-    */
+    //Se não existe um disco menor no topo da torre que será movido o disco atual
     for(int i=0;i<4;i++){
         if(linha1[i] != linha2[i]){
             for(int x=i-1;x>=0;x--){

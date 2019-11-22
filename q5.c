@@ -70,23 +70,43 @@ int colisao(char mat[], int modulo){
     return modulo + primeiro_digito;
 }
 
+int pode_gravar(hash *h, int pos, int cont){
+    int controle = 1;
+    for (int i = 0; i < cont; i++){
+        if(h[i].pos == pos){
+            controle = 0;
+            break;
+        }
+    }
+    return controle;
+}
+
 int grava_hash(hash *h, funcionario *f, char mat[], int atual, int *num_colisao){
     int controle = 1;
+    
     if(atual == NUM_VETOR - 1){
         *num_colisao = *num_colisao + 1;
         controle = 0;
-        return controle;
     }else{
         char *num_digito = digitos(mat);
         int pos = atoi(num_digito)%NUM_VETOR;
 
-        for (int i = 0; i < atual; i++){
-            if(h[i].pos == pos){
-                *num_colisao += 1;
-                pos = colisao(mat, pos);
-                grava_hash(h, f, mat, atual, num_colisao);
-            }
+        while(!pode_gravar(h, pos, atual)){
+            *num_colisao += 1;
+            pos = colisao(mat, pos);
         }
+
+        atual++;
+        h[atual].pos = pos;
+        // h[atual].mat = "feito\0";
+
+
+        // for (int i = 0; i < atual; i++){
+        //     if(h[i].pos == pos){
+        //         pos = colisao(mat, pos);
+        //         grava_hash(h, f, mat, atual, num_colisao);
+        //     }
+        // }
     }
     return controle;
 
@@ -109,6 +129,7 @@ int main(){
         if(x){
             atual++;
         }
+        printf("controle = %d\n", atual);
     }
 
     printf("num colisoes = %d\n", num_colisoes);

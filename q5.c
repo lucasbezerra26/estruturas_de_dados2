@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define NUM_VETOR 101
+#define NUM_VETOR 150
 
 typedef struct {
     char matricula[6];
@@ -20,7 +20,7 @@ funcionario *gerar_funcionarios_arquivo(){
     funcionario *f = NULL;
     arquivo = fopen("entradaHASHING-05.txt", "r");
     f = (funcionario *)malloc(sizeof(funcionario) * 1000);
-    int vet[1000][6], cont = 0;
+    int cont = 0;
     if (arquivo != NULL){
         while (!feof(arquivo)){
             fscanf(arquivo, "%s", f[cont].matricula);
@@ -30,25 +30,12 @@ funcionario *gerar_funcionarios_arquivo(){
     return f;
 }
 
-funcionario *gerar_funcionarios(){    
-    funcionario *f = NULL;
-    f = (funcionario * ) malloc(sizeof(funcionario) * 1000);
-    char matriculas[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
-    
-    for (int i = 0; i < 1000; i++){
-        f[i].matricula[0] = matriculas[rand()%10];
-        f[i].matricula[1] = matriculas[rand()%10];
-        f[i].matricula[2] = matriculas[rand()%10];
-        f[i].matricula[3] = matriculas[rand()%10];
-        f[i].matricula[4] = matriculas[rand()%10];
-        f[i].matricula[5] = matriculas[rand()%10];
-    }
-    return f;
-}
-
 hash *gerar_hash(){
     hash *h = NULL;
     h = (hash * ) malloc(sizeof(hash) * NUM_VETOR);
+    for (int i = 0; i < NUM_VETOR; i++){
+        h[i].pos = -1;
+    }
     return h;
 }
 
@@ -88,7 +75,7 @@ int colisao(char mat[], int modulo){
 int pode_gravar(hash *h, int pos, int cont){
     int controle = 1;
     for (int i = 0; i < cont; i++){
-        if(h[i].pos == pos){
+        if(h[i].pos == pos && pos != -1){
             controle = 0;
             break;
         }
@@ -113,15 +100,7 @@ int grava_hash(hash *h, funcionario *f, char mat[], int atual, int *num_colisao)
 
         atual++;
         h[atual].pos = pos;
-        // h[atual].mat = "feito\0";
 
-
-        // for (int i = 0; i < atual; i++){
-        //     if(h[i].pos == pos){
-        //         pos = colisao(mat, pos);
-        //         grava_hash(h, f, mat, atual, num_colisao);
-        //     }
-        // }
     }
     return controle;
 
@@ -132,12 +111,10 @@ int main(){
 
     funcionario *funcionarios;
 
-    // funcionarios = gerar_funcionarios();
     funcionarios = gerar_funcionarios_arquivo();
     hash *hashes = gerar_hash();
     int atual = 0;
 
-    // char *mat = rotaciona("123456");
     int num_colisoes = 0;
 
     for (int i = 0; i < 1000; i++){
@@ -145,8 +122,9 @@ int main(){
         if(x){
             atual++;
         }
-        printf("controle = %d\n", atual);
     }
+
+    printf("num atual %d\n", atual);
 
     printf("num colisoes = %d\n", num_colisoes);
     

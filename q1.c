@@ -105,35 +105,79 @@ grafo *gerarGrafo(){
     return g;
 }
 
-void dijkstra(grafo *g){
-    int n = 81;
-    int visitados[n];
-
-    for(int i = 1; i < n; i++){ // Começa em 1 pois não precisa comparar o vértice com ele mesmo
-
-        int min = -1; // Variável que guarda a posição do menor valor, inicia em -1 pois é uma posição inválida
-        unsigned long int MinValor = 4294967295; // Variável que guarda o menor valor encontrado, inicia com 'infinito', assim, sempre na primeira passada o valor será menor que esta variável
-
-        // For que percorre todas as linhas na coluna [0]
-        for(int j = 1; j < n; j++){
-            // Se o vertice ainda não foi visitado e o valor for menor que o 'MinValor'
-            if( visitados[j] == 0 && g->pesos[j][0] < MinValor ){
-                   min = j; // Guarda a posição do menor
-                   MinValor = g->pesos[j][0]; // Guarda o menor valor
-            }
-          }
-
-          visitados[min] = 1; // Marca o valor a posição do minimo como visitado
-
-        // For de 1 até n
-          for(int j = 1; j < n; j++){
-               // Se o valor da coluna [0] + o valor da coluna que está passando for menor que o valor da linha que está passando e coluna [0]
-               // Atualiza a primeira coluna da matriz, que será utilizado para as próximas iterações
-               if( (g->pesos[min][0] + g->pesos[min][j]) < g->pesos[j][0] ){
-                g->pesos[j][0] = g->pesos[min][0] + g->pesos[min][j];
-               }
-          }
+void BellmanFord(grafo *hanoi, int **pesos, int ini){
+    grafo *gr = hanoi;
+    int n1, n2, n3;
+    float vetorCusto[81], vetorAnterior[81];
+    for (n1 = 0; n1 < 81; n1++){
+        vetorCusto[n1] = 4294967295;
     }
+
+    vetorCusto[ini] = 0;
+    vetorAnterior[ini] = ini;
+
+    for (n1 = 0; n1 < 81 - 1; n1++){       //Pecorre todos as ITERAÇÕES possiveis até está tudo correto.
+        for (n2 = 0; n2 < 81; n2++){         //Pecorre todos os VERTICES.
+            if (vetorCusto[n2] != 4294967295){
+                for (n3 = 0; n3 < gr->grau[n2]; n3++){        //Pecorre todas as ARESTAS dos VERTICES.
+                    if (vetorCusto[gr->aresta[n2][n3]] > vetorCusto[n2] + pesos[n2][n3]){
+                        vetorCusto[gr->aresta[n2][n3]] = vetorCusto[n2] + pesos[n2][n3];
+                        vetorAnterior[gr->aresta[n2][n3]] = n2;
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+int existe_aberto(int v[]){
+    for(int i = 0; i < 81; i++){
+        if(v[i]){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int menor_distancia(grafo *g, int abertos[], int distancia[]){
+    long int menor = 4294967295;
+    for(int i = 0; i < 81; i++){
+        if(abertos[i] && distancia[i] < menor){
+            menor = distancia[i];
+        }   
+    }
+    return menor;
+}
+
+void relaxa(grafo *g, int distancia[], int predecessores[], int u, int valor){
+    if(distancia[valor] > distancia[u] + 1){
+        distancia[valor] = distancia[u] + 1;
+        predecessores[valor] = u;
+    }
+}
+
+void dijkstra(grafo *g, int **pesos, int final){
+    int distancia[81];
+    int predecessores[81];
+    int abertos[81];
+
+
+    for (int i = 0; i < 81; i++){
+        abertos[i] = 1;
+    }
+
+    while (existe_aberto(abertos)){
+        int u = menor_distancia(g, abertos, distancia);
+        abertos[u] = 0;
+
+        for(int i = 0; i < g->grau[u]; i++){
+            relaxa(g, distancia, predecessores, u, g->aresta[u][i]);
+        }
+
+    }
+    
+    printf("disrancia\n");
 }
 
 int main(){
@@ -145,7 +189,9 @@ int main(){
         printf("\n");
     }
 
-    dijkstra(g);
+    dijkstra(g, g->pesos, 80);
+
+    // BellmanFord(g, g->pesos, 80);
 
     return 0;
 }

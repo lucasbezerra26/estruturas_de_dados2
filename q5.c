@@ -15,6 +15,21 @@ typedef struct {
     char mat[6];
 }hash;
 
+funcionario *gerar_funcionarios_arquivo(){
+    FILE *arquivo;
+    funcionario *f = NULL;
+    arquivo = fopen("entradaHASHING-05.txt", "r");
+    f = (funcionario *)malloc(sizeof(funcionario) * 1000);
+    int vet[1000][6], cont = 0;
+    if (arquivo != NULL){
+        while (!feof(arquivo)){
+            fscanf(arquivo, "%s", f[cont].matricula);
+            cont++;
+        }
+    }
+    return f;
+}
+
 funcionario *gerar_funcionarios(){    
     funcionario *f = NULL;
     f = (funcionario * ) malloc(sizeof(funcionario) * 1000);
@@ -97,7 +112,8 @@ int main(){
 
     funcionario *funcionarios;
 
-    funcionarios = gerar_funcionarios();
+    // funcionarios = gerar_funcionarios();
+    funcionarios = gerar_funcionarios_arquivo();
     hash *hashes = gerar_hash();
     int atual = 0;
 

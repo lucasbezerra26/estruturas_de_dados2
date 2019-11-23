@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define NUM_VETOR 101
+#define NUM_VETOR 150
 
 typedef struct {
     char matricula[6];
@@ -39,26 +39,7 @@ hash *gerar_hash(){
     return h;
 }
 
-char *rotaciona(char matricula[]){
-    char *matricula_final = (char *) malloc(6 * sizeof(char));
-    char numero1 = matricula[0];
-    char numero2 = matricula[1];
-    char numero3 = matricula[2];
-    char numero4 = matricula[3];
-    char numero5 = matricula[4];
-    char numero6 = matricula[5];
-
-    matricula_final[0] = numero5;
-    matricula_final[1] = numero6;
-    matricula_final[2] = numero1;
-    matricula_final[3] = numero2;
-    matricula_final[4] = numero3;
-    matricula_final[5] = numero4;
-    
-    return matricula_final;
-}
-
-char *digitos(char matricula[]){
+char *digitosA(char matricula[]){
     char *d = (char *) malloc(4 * sizeof(char));
     d[0] = matricula[5];
     d[1] = matricula[1];
@@ -67,11 +48,29 @@ char *digitos(char matricula[]){
     return d;
 }
 
-int colisao(char mat[], int modulo, int *flag){
+int digitosB(char matricula[]){
+    int num1 = (
+        (matricula[0]-'0'*100) +
+        (matricula[2]-'0'*10) +
+        (matricula[4]-'0'*1)
+    );
+    int num2 = (
+        (matricula[1]-'0'*100) +
+        (matricula[3]-'0'*10) +
+        (matricula[5]-'0'*1)
+    );
+    return ((num1+num2)%1000)%NUM_VETOR;
+}
+
+int colisaoA(char mat[], int modulo, int *flag){
     int primeiro_digito = mat[4] - '0';
     if(primeiro_digito == 0)
         *flag = 1;
     return modulo + primeiro_digito;
+}
+
+int colisaoB(int modulo){
+    return modulo + 7;
 }
 
 int pode_gravar(hash *h, int pos){
@@ -95,23 +94,45 @@ int ocupados(hash *h){
     return c;
 }
 
-int grava_hash(hash *h, funcionario *f, char mat[], int atual, int *num_colisao){
+int grava_hashA(hash *h, funcionario *f, char mat[], int atual, int *num_colisao){
     int controle = 1;
     
     if(atual == NUM_VETOR - 1){
         *num_colisao = *num_colisao + 1;
         controle = 0;
     }else{
-        char *num_digito = digitos(mat);
+        char *num_digito = digitosA(mat);
         int pos = atoi(num_digito)%NUM_VETOR;
         int flag = 0;
 
         while(!pode_gravar(h, pos) && pos < NUM_VETOR){
             *num_colisao += 1;
-            pos = colisao(mat, pos, &flag);
+            pos = colisaoA(mat, pos, &flag);
             if(flag){
                 break;
             }
+        }
+
+        atual++;
+        h[atual].pos = pos;
+
+    }
+    return controle;
+
+}
+
+int grava_hashB(hash *h, funcionario *f, char mat[], int atual, int *num_colisao){
+    int controle = 1;
+    
+    if(atual == NUM_VETOR - 1){
+        *num_colisao = *num_colisao + 1;
+        controle = 0;
+    }else{
+        int pos = digitosB(mat);
+
+        while(!pode_gravar(h, pos) && pos < NUM_VETOR){
+            *num_colisao += 1;
+            pos = colisaoB(pos);
         }
 
         atual++;
@@ -128,17 +149,21 @@ int main(){
     funcionario *funcionarios;
 
     funcionarios = gerar_funcionarios_arquivo();
-    hash *hashes = gerar_hash();
+    hash *hashesA = gerar_hash();
+    hash *hashesB = gerar_hash();
     
-    int num_colisoes = 0;
+    int num_colisoesA = 0;
+    int num_colisoesB = 0;
 
     for (int i = 0; i < 1000; i++){
-        int x = grava_hash(hashes, funcionarios, funcionarios[i].matricula, ocupados(hashes), &num_colisoes);
+        grava_hashA(hashesA, funcionarios, funcionarios[i].matricula, ocupados(hashesA), &num_colisoesA);
+        grava_hashB(hashesB, funcionarios, funcionarios[i].matricula, ocupados(hashesB), &num_colisoesB);
     }
 
-    printf("num atual %d\n", ocupados(hashes));
+    // printf("num atual %d\n", ocupados(hashes));
 
-    printf("num colisoes = %d\n", num_colisoes);
+    printf("num colisoesA = %d\n", num_colisoesA);
+    printf("num colisoesB = %d\n", num_colisoesB);
     
     return 0;
 

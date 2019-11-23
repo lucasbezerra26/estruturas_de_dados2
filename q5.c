@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define NUM_VETOR 150
+#define NUM_VETOR 101
 
 typedef struct {
     char matricula[6];
@@ -60,27 +60,39 @@ char *rotaciona(char matricula[]){
 
 char *digitos(char matricula[]){
     char *d = (char *) malloc(4 * sizeof(char));
-    d[0] = matricula[1];
-    d[1] = matricula[3];
-    d[2] = matricula[5];
+    d[0] = matricula[5];
+    d[1] = matricula[1];
+    d[2] = matricula[3];
     d[3] = '\0';
     return d;
 }
 
-int colisao(char mat[], int modulo){
-    int primeiro_digito = mat[0] - '0';
+int colisao(char mat[], int modulo, int *flag){
+    int primeiro_digito = mat[4] - '0';
+    if(primeiro_digito == 0)
+        *flag = 1;
     return modulo + primeiro_digito;
 }
 
-int pode_gravar(hash *h, int pos, int cont){
+int pode_gravar(hash *h, int pos){
     int controle = 1;
-    for (int i = 0; i < cont; i++){
-        if(h[i].pos == pos && pos != -1){
+    for (int i = 0; i < NUM_VETOR; i++){
+        if(h[i].pos == pos){
             controle = 0;
             break;
         }
     }
     return controle;
+}
+
+int ocupados(hash *h){
+    int c = 0;
+    for (int i = 0; i < NUM_VETOR; i++){
+        if (h[i].pos != -1){
+            c++;
+        }
+    }
+    return c;
 }
 
 int grava_hash(hash *h, funcionario *f, char mat[], int atual, int *num_colisao){
@@ -92,10 +104,14 @@ int grava_hash(hash *h, funcionario *f, char mat[], int atual, int *num_colisao)
     }else{
         char *num_digito = digitos(mat);
         int pos = atoi(num_digito)%NUM_VETOR;
+        int flag = 0;
 
-        while(!pode_gravar(h, pos, atual)){
+        while(!pode_gravar(h, pos) && pos < NUM_VETOR){
             *num_colisao += 1;
-            pos = colisao(mat, pos);
+            pos = colisao(mat, pos, &flag);
+            if(flag){
+                break;
+            }
         }
 
         atual++;
@@ -113,18 +129,14 @@ int main(){
 
     funcionarios = gerar_funcionarios_arquivo();
     hash *hashes = gerar_hash();
-    int atual = 0;
-
+    
     int num_colisoes = 0;
 
     for (int i = 0; i < 1000; i++){
-        int x = grava_hash(hashes, funcionarios, funcionarios[i].matricula, atual, &num_colisoes);
-        if(x){
-            atual++;
-        }
+        int x = grava_hash(hashes, funcionarios, funcionarios[i].matricula, ocupados(hashes), &num_colisoes);
     }
 
-    printf("num atual %d\n", atual);
+    printf("num atual %d\n", ocupados(hashes));
 
     printf("num colisoes = %d\n", num_colisoes);
     

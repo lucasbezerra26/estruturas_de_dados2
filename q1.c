@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 typedef struct{
     int **aresta; //as conexões
@@ -141,13 +142,14 @@ int existe_aberto(int v[]){
 }
 
 int menor_distancia(grafo *g, int abertos[], int distancia[]){
-    long int menor = 4294967295;
+    long int menor = INT_MAX / 2, retorno = -1;
     for(int i = 0; i < 81; i++){
-        if(abertos[i] && distancia[i] < menor){
+        if (abertos[i] && (distancia[i] < menor) ){
             menor = distancia[i];
+            retorno = i;
         }   
     }
-    return menor;
+    return retorno;
 }
 
 void relaxa(grafo *g, int distancia[], int predecessores[], int u, int valor){
@@ -155,41 +157,93 @@ void relaxa(grafo *g, int distancia[], int predecessores[], int u, int valor){
         distancia[valor] = distancia[u] + 1;
         predecessores[valor] = u;
     }
+    
 }
 
-void dijkstra(grafo *g, int **pesos, int final){
+int dijkstra(grafo *g, int **pesos, int final, int ini, int *predecessores){
     int distancia[81];
-    int predecessores[81];
     int abertos[81];
-
 
     for (int i = 0; i < 81; i++){
         abertos[i] = 1;
     }
 
+    for (int i = 0; i < 81; i++){
+        distancia[i] = INT_MAX/2;
+    }
+    distancia[ini] = 0;
+
+    for (int i = 0; i < 81; i++){   
+        predecessores[i] = -1;
+    }
+
     while (existe_aberto(abertos)){
         int u = menor_distancia(g, abertos, distancia);
+        if (u == -1){
+            continue;
+        }
         abertos[u] = 0;
-
         for(int i = 0; i < g->grau[u]; i++){
             relaxa(g, distancia, predecessores, u, g->aresta[u][i]);
         }
-
     }
+
+    return distancia[80];//onde todos os discos estão na torre 4
+}
+
+int converteEstadoPosicao(int estado1, int estado2, int estado3, int estado4){
+    int cont=0;
+    for( int i=0; i<3; i++){    
+        for( int z=0; z<3; z++){
+            for( int x=0; x<3; x++){
+                for( int y=0; y<3; y++){
+                    if( i+1 == estado1 && z+1 == estado2 && x+1 == estado3 && y+1==estado4) 
+                        return cont;
+                    cont++;
+                }
+
+            }
+        }
+    }
+}
+
+void mostraCaminho(int valor, int *predecessores){
+    int aux = predecessores[valor], cont=0;
     
-    printf("disrancia\n");
+    printf("Caminho: 80 ");
+    while (1){
+        if(aux == 0 || aux == -1) break;
+        printf("%d ", aux);
+        aux = predecessores[aux];
+        cont++;
+    }
+    printf("\nPeso: %d\n",cont);
 }
 
 int main(){
+    int estado1, estado2, estado3, estado4, predecessores[81];
     grafo *g = gerarGrafo();
-    for(int i=0;i<81;i++){
-        printf("%d- ",i);
-        for (int x = 0; x < 3; x++)
-            printf("%d ",g->aresta[i][x]);
-        printf("\n");
-    }
+    // for(int i=0;i<81;i++){
+    //     printf("%d- ",i);
+    //     for (int x = 0; x < 3; x++)
+    //         printf("%d ",g->aresta[i][x]);
+    //     printf("\n");
+    // }
+    // for(int i=0;i<81;i++){
+    //     printf("%d- %d%d%d%d\n ", i, g->estados[i][0], g->estados[i][1], g->estados[i][2], g->estados[i][3]);
+    // }
 
-    dijkstra(g, g->pesos, 80);
+    printf("entre com uma posição dos disco nas torres:\n");
+    printf("ex: 1 1 1 1 significa que todos estão na torre 1.\n");
+    printf("ex: 1 2 3 3 significa que o menor está na torre 1, o maior e o segundo maior na torre 3, e o outra na torre 2.\n");
+    printf(">>>");
+    scanf("%d %d %d %d", &estado1, &estado2, &estado3, &estado4);
+    int posicao = converteEstadoPosicao(estado1, estado2, estado3, estado4);
+    // int posicao = converteEstadoPosicao(1, 1, 3, 3);
+    printf("Posicao: %d\n", posicao);
+
+    dijkstra(g, g->pesos, 80, posicao, predecessores);
+    mostraCaminho(80,predecessores);
 
     // BellmanFord(g, g->pesos, 80);
 

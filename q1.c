@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <sys/time.h>
 
 typedef struct{
     int **aresta; //as conexões
@@ -220,9 +221,17 @@ void mostraCaminho(int valor, int *predecessores){
     printf("\nPeso: %d\n",cont);
 }
 
+long getMicrotime(){
+	struct timeval currentTime;
+	gettimeofday(&currentTime, NULL);
+	return currentTime.tv_sec * (int)1e6 + currentTime.tv_usec;
+}
+
 int main(){
+    int ini, fim;
     int estado1, estado2, estado3, estado4, predecessores[81];
     grafo *g = gerarGrafo();
+
     // for(int i=0;i<81;i++){
     //     printf("%d- ",i);
     //     for (int x = 0; x < 3; x++)
@@ -232,6 +241,7 @@ int main(){
     // for(int i=0;i<81;i++){
     //     printf("%d- %d%d%d%d\n ", i, g->estados[i][0], g->estados[i][1], g->estados[i][2], g->estados[i][3]);
     // }
+    // int posicao = converteEstadoPosicao(1, 1, 3, 3);
 
     printf("entre com uma posição dos disco nas torres:\n");
     printf("ex: 1 1 1 1 significa que todos estão na torre 1.\n");
@@ -239,10 +249,12 @@ int main(){
     printf(">>>");
     scanf("%d %d %d %d", &estado1, &estado2, &estado3, &estado4);
     int posicao = converteEstadoPosicao(estado1, estado2, estado3, estado4);
-    // int posicao = converteEstadoPosicao(1, 1, 3, 3);
     printf("Posicao: %d\n", posicao);
 
+    ini = getMicrotime();
     dijkstra(g, g->pesos, 80, posicao, predecessores);
+    fim = getMicrotime();
+    printf("Tempo: %d\n", (fim - ini));
     mostraCaminho(80,predecessores);
 
     // BellmanFord(g, g->pesos, 80);

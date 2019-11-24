@@ -181,6 +181,7 @@ int converteEstadoPosicao(int estado1, int estado2, int estado3, int estado4){
             }
         }
     }
+    return cont;
 }
 
 void mostraCaminho(int valor, int *predecessores){

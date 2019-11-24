@@ -107,31 +107,6 @@ grafo *gerarGrafo(){
     return g;
 }
 
-void BellmanFord(grafo *hanoi, int **pesos, int ini){
-    grafo *gr = hanoi;
-    int n1, n2, n3;
-    float vetorCusto[81], vetorAnterior[81];
-    for (n1 = 0; n1 < 81; n1++){
-        vetorCusto[n1] = 4294967295;
-    }
-
-    vetorCusto[ini] = 0;
-    vetorAnterior[ini] = ini;
-
-    for (n1 = 0; n1 < 81 - 1; n1++){       //Pecorre todos as ITERAÇÕES possiveis até está tudo correto.
-        for (n2 = 0; n2 < 81; n2++){         //Pecorre todos os VERTICES.
-            if (vetorCusto[n2] != 4294967295){
-                for (n3 = 0; n3 < gr->grau[n2]; n3++){        //Pecorre todas as ARESTAS dos VERTICES.
-                    if (vetorCusto[gr->aresta[n2][n3]] > vetorCusto[n2] + pesos[n2][n3]){
-                        vetorCusto[gr->aresta[n2][n3]] = vetorCusto[n2] + pesos[n2][n3];
-                        vetorAnterior[gr->aresta[n2][n3]] = n2;
-                    }
-                }
-            }
-        }
-    }
-
-}
 
 int existe_aberto(int v[]){
     for(int i = 0; i < 81; i++){
@@ -256,8 +231,6 @@ int main(){
     fim = getMicrotime();
     printf("Tempo: %d\n", (fim - ini));
     mostraCaminho(80,predecessores);
-
-    // BellmanFord(g, g->pesos, 80);
 
     return 0;
 }

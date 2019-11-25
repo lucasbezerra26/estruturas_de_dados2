@@ -184,10 +184,10 @@ int converteEstadoPosicao(int estado1, int estado2, int estado3, int estado4){
     return cont;
 }
 
-void mostraCaminho(int aux, int *predecessores){
+void mostraCaminho(grafo *gr,int aux, int *predecessores){
     if (aux>-1){
-        printf("%d ", aux);
-        mostraCaminho(predecessores[aux], predecessores);
+        printf("Posicao: %d Estado: %d %d %d %d\n", aux, gr->estados[aux][0], gr->estados[aux][1], gr->estados[aux][2], gr->estados[aux][3]);
+        mostraCaminho(gr, predecessores[aux], predecessores);
     }
 }
 
@@ -219,14 +219,14 @@ int main(){
     printf(">>>");
     scanf("%d %d %d %d", &estado1, &estado2, &estado3, &estado4);
     int posicao = converteEstadoPosicao(estado1, estado2, estado3, estado4);
-    printf("Posicao: %d\n", posicao);
+    // printf("Posicao: %d\n", posicao);
 
     ini = getMicrotime();
     dijkstra(g, g->pesos, 80, posicao, predecessores);
     fim = getMicrotime();
     printf("Tempo: %d\n", (fim - ini));
     printf("Caminho: ");
-    mostraCaminho(80, predecessores);
+    mostraCaminho(g,80, predecessores);
     printf("\n");
 
     return 0;

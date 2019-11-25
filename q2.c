@@ -100,17 +100,16 @@ grafo *gerarGrafo(){
                 g->aresta[x][g->grau[x]] = i;
                 g->grau[i]++;
                 g->grau[x]++;
-                // printf("-- %d %d %d %d\n", g->estados[x][0], g->estados[x][1], g->estados[x][2], g->estados[x][3]);
             }
         }
     }
     return g;
 }
 
-void mostraCaminho(int aux, int *predecessores){
+void mostraCaminho(grafo *gr,int aux, int *predecessores){
     if (aux>-1){
-        printf("%d ", aux);
-        mostraCaminho(predecessores[aux], predecessores);
+        printf("Posicao: %d Estado: %d %d %d %d\n", aux, gr->estados[aux][0], gr->estados[aux][1], gr->estados[aux][2], gr->estados[aux][3]);
+        mostraCaminho(gr, predecessores[aux], predecessores);
     }
 }
 
@@ -191,7 +190,7 @@ int main(){
     scanf("%d %d %d %d", &estado1, &estado2, &estado3, &estado4);
     setbuf(stdin,NULL);
     int posicao = converteEstadoPosicao(estado1, estado2, estado3, estado4);
-    printf("Posicao: %d\n", posicao);
+    // printf("Posicao: %d\n", posicao);
 
     ini = getMicrotime();
     BellmanFord(g, g->pesos, 80, posicao, predecessores);
@@ -199,7 +198,7 @@ int main(){
     printf("Tempo: %d\n", (fim - ini));
 
     printf("Caminho: ");
-    mostraCaminho(80,predecessores);
+    mostraCaminho(g, 80, predecessores);
     printf("\n");
 
     return 0;

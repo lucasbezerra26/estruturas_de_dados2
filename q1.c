@@ -184,17 +184,11 @@ int converteEstadoPosicao(int estado1, int estado2, int estado3, int estado4){
     return cont;
 }
 
-void mostraCaminho(int valor, int *predecessores){
-    int aux = predecessores[valor], cont=0;
-    
-    printf("Caminho: 80 ");
-    while (1){
-        if(aux == 0 || aux == -1) break;
+void mostraCaminho(int aux, int *predecessores){
+    if (aux>-1){
         printf("%d ", aux);
-        aux = predecessores[aux];
-        cont++;
+        mostraCaminho(predecessores[aux], predecessores);
     }
-    printf("\nPeso: %d\n",cont);
 }
 
 long getMicrotime(){
@@ -231,7 +225,9 @@ int main(){
     dijkstra(g, g->pesos, 80, posicao, predecessores);
     fim = getMicrotime();
     printf("Tempo: %d\n", (fim - ini));
-    mostraCaminho(80,predecessores);
+    printf("Caminho: ");
+    mostraCaminho(80, predecessores);
+    printf("\n");
 
     return 0;
 }

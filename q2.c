@@ -107,22 +107,15 @@ grafo *gerarGrafo(){
     return g;
 }
 
-void mostraCaminho(int valor, int *predecessores){
-    int aux = predecessores[valor], cont=0;
-    
-    printf("Caminho: 80 ");
-    while (1){
-        if(aux == 0 || aux == -1) break;
+void mostraCaminho(int aux, int *predecessores){
+    if (aux>-1){
         printf("%d ", aux);
-        aux = predecessores[aux];
-        cont++;
-        // break;
+        mostraCaminho(predecessores[aux], predecessores);
     }
-    printf("\nPeso: %d\n",cont);
 }
 
 void BellmanFord(grafo *gr, int **pesos, int fim, int posicao, int predecessores[]){
-    int n1, n2, n3, flag=1;
+    int flag=1;
     long int distancia[81];
 
     for (int i = 0; i < 81; i++){  
@@ -133,14 +126,14 @@ void BellmanFord(grafo *gr, int **pesos, int fim, int posicao, int predecessores
     distancia[posicao] = 0;
     predecessores[fim] = fim;
 
-    for (n1 = 0; n1 < 80 && flag; n1++){ 
+    for (int i = 0; i < 80 && flag;i++){ 
         flag = 0;
-        for (n2 = 0; n2 < 81; n2++){
-            if (distancia[n2] != (INT_MAX/2)){
-                for (n3 = 0; n3 < gr->grau[n2]; n3++){ 
-                    if (distancia[gr->aresta[n2][n3]] > distancia[n2] + 1){
-                        distancia[gr->aresta[n2][n3]] = distancia[n2] + 1;
-                        predecessores[gr->aresta[n2][n3]] = n2;
+        for (int x = 0; x < 81; x++){
+            if (distancia[x] != (INT_MAX/2)){
+                for (int y = 0; y < gr->grau[x]; y++){ 
+                    if (distancia[gr->aresta[x][y]] > distancia[x] + 1){
+                        distancia[gr->aresta[x][y]] = distancia[x] + 1;
+                        predecessores[gr->aresta[x][y]] = x;
                         flag = 1;
                     }
                 }
@@ -204,6 +197,10 @@ int main(){
     BellmanFord(g, g->pesos, 80, posicao, predecessores);
     fim = getMicrotime();
     printf("Tempo: %d\n", (fim - ini));
+
+    printf("Caminho: ");
     mostraCaminho(80,predecessores);
+    printf("\n");
+
     return 0;
 }

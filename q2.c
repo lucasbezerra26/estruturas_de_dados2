@@ -107,38 +107,46 @@ grafo *gerarGrafo(){
     return g;
 }
 
-void BellmanFord(grafo *hanoi, int **pesos, int ini, int posicao, int predecessores[]){
-    grafo *gr = hanoi;
-    int n1, n2, n3;
-    long int vetorCusto[81], vetorAnterior[81];
-    for (n1 = 0; n1 < 81; n1++){
-        vetorCusto[n1] = 4294967295;
-        vetorAnterior[n1] = NULL;
+void mostraCaminho(int valor, int *predecessores){
+    int aux = predecessores[valor], cont=0;
+    
+    printf("Caminho: 80 ");
+    while (1){
+        if(aux == 0 || aux == -1) break;
+        printf("%d ", aux);
+        aux = predecessores[aux];
+        cont++;
+        // break;
     }
+    printf("\nPeso: %d\n",cont);
+}
 
-    for (int i = 0; i < 81; i++){   
+void BellmanFord(grafo *gr, int **pesos, int fim, int posicao, int predecessores[]){
+    int n1, n2, n3, flag=1;
+    long int distancia[81];
+
+    for (int i = 0; i < 81; i++){  
         predecessores[i] = -1;
+        distancia[i] = INT_MAX / 2;
     }
 
-    vetorCusto[ini] = 0;
-    vetorAnterior[ini] = ini;
+    distancia[posicao] = 0;
+    predecessores[fim] = fim;
 
-    for (n1 = 0; n1 < 81 - 1; n1++){       //Pecorre todos as ITERAÇÕES possiveis até está tudo correto.
-        for (n2 = 0; n2 < 81; n2++){         //Pecorre todos os VERTICES.
-            if (vetorCusto[n2] != 4294967295){
-                for (n3 = 0; n3 < gr->grau[n2]; n3++){        //Pecorre todas as ARESTAS dos VERTICES.
-                    if (vetorCusto[gr->aresta[n2][n3]] > vetorCusto[n2] + pesos[n2][n3]){
-                        vetorCusto[gr->aresta[n2][n3]] = vetorCusto[n2] + pesos[n2][n3];
-                        vetorAnterior[gr->aresta[n2][n3]] = n2;
+    for (n1 = 0; n1 < 80 && flag; n1++){ 
+        flag = 0;
+        for (n2 = 0; n2 < 81; n2++){
+            if (distancia[n2] != (INT_MAX/2)){
+                for (n3 = 0; n3 < gr->grau[n2]; n3++){ 
+                    if (distancia[gr->aresta[n2][n3]] > distancia[n2] + 1){
+                        distancia[gr->aresta[n2][n3]] = distancia[n2] + 1;
+                        predecessores[gr->aresta[n2][n3]] = n2;
+                        flag = 1;
                     }
                 }
             }
         }
     }
-
-    mostraCaminho(81, predecessores);
-    
-
 }
 
 
@@ -159,18 +167,6 @@ int converteEstadoPosicao(int estado1, int estado2, int estado3, int estado4){
     return cont;
 }
 
-void mostraCaminho(int valor, int *predecessores){
-    int aux = predecessores[valor], cont=0;
-    
-    printf("Caminho: 80 ");
-    while (1){
-        if(aux == 0 || aux == -1) break;
-        printf("%d ", aux);
-        aux = predecessores[aux];
-        cont++;
-    }
-    printf("\nPeso: %d\n",cont);
-}
 
 long getMicrotime(){
 	struct timeval currentTime;
@@ -198,7 +194,9 @@ int main(){
     printf("ex: 1 1 1 1 significa que todos estão na torre 1.\n");
     printf("ex: 1 2 3 3 significa que o menor está na torre 1, o maior e o segundo maior na torre 3, e o outra na torre 2.\n");
     printf(">>>");
+    setbuf(stdin,NULL);
     scanf("%d %d %d %d", &estado1, &estado2, &estado3, &estado4);
+    setbuf(stdin,NULL);
     int posicao = converteEstadoPosicao(estado1, estado2, estado3, estado4);
     printf("Posicao: %d\n", posicao);
 
@@ -207,7 +205,5 @@ int main(){
     fim = getMicrotime();
     printf("Tempo: %d\n", (fim - ini));
     mostraCaminho(80,predecessores);
-
-
     return 0;
 }

@@ -225,7 +225,7 @@ int main(){
     dijkstra(g, g->pesos, 80, posicao, predecessores);
     fim = getMicrotime();
     printf("Tempo: %d\n", (fim - ini));
-    printf("Caminho: ");
+    printf("Caminho:\n");
     mostraCaminho(g,80, predecessores);
     printf("\n");
 

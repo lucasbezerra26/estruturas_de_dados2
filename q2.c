@@ -197,7 +197,7 @@ int main(){
     fim = getMicrotime();
     printf("Tempo: %d\n", (fim - ini));
 
-    printf("Caminho: ");
+    printf("Caminho:\n");
     mostraCaminho(g, 80, predecessores);
     printf("\n");
 

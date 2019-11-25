@@ -222,7 +222,9 @@ int main(){
     // printf("Posicao: %d\n", posicao);
 
     ini = getMicrotime();
-    dijkstra(g, g->pesos, 80, posicao, predecessores);
+    int retorno = dijkstra(g, g->pesos, 80, posicao, predecessores);
+    printf("A quantidade de movimentações e custo é %d\n", retorno);
+
     fim = getMicrotime();
     printf("Tempo: %d\n", (fim - ini));
     printf("Caminho:\n");

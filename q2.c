@@ -113,7 +113,7 @@ void mostraCaminho(grafo *gr,int aux, int *predecessores){
     }
 }
 
-void BellmanFord(grafo *gr, int **pesos, int fim, int posicao, int predecessores[]){
+int BellmanFord(grafo *gr, int **pesos, int fim, int posicao, int predecessores[]){
     int flag=1;
     long int distancia[81];
 
@@ -139,6 +139,7 @@ void BellmanFord(grafo *gr, int **pesos, int fim, int posicao, int predecessores
             }
         }
     }
+    return distancia[80]; //onde todos os discos estão na torre 4
 }
 
 
@@ -193,7 +194,8 @@ int main(){
     // printf("Posicao: %d\n", posicao);
 
     ini = getMicrotime();
-    BellmanFord(g, g->pesos, 80, posicao, predecessores);
+    int retorno = BellmanFord(g, g->pesos, 80, posicao, predecessores);
+    printf("A quantidade de movimentações e custo é %d\n", retorno);
     fim = getMicrotime();
     printf("Tempo: %d\n", (fim - ini));
 

@@ -107,12 +107,17 @@ grafo *gerarGrafo(){
     return g;
 }
 
-void BellmanFord(grafo *hanoi, int **pesos, int ini){
+void BellmanFord(grafo *hanoi, int **pesos, int ini, int posicao, int predecessores[]){
     grafo *gr = hanoi;
     int n1, n2, n3;
-    float vetorCusto[81], vetorAnterior[81];
+    long int vetorCusto[81], vetorAnterior[81];
     for (n1 = 0; n1 < 81; n1++){
         vetorCusto[n1] = 4294967295;
+        vetorAnterior[n1] = NULL;
+    }
+
+    for (int i = 0; i < 81; i++){   
+        predecessores[i] = -1;
     }
 
     vetorCusto[ini] = 0;
@@ -131,6 +136,9 @@ void BellmanFord(grafo *hanoi, int **pesos, int ini){
         }
     }
 
+    mostraCaminho(81, predecessores);
+    
+
 }
 
 
@@ -148,6 +156,7 @@ int converteEstadoPosicao(int estado1, int estado2, int estado3, int estado4){
             }
         }
     }
+    return cont;
 }
 
 void mostraCaminho(int valor, int *predecessores){
@@ -185,21 +194,20 @@ int main(){
     // }
     // int posicao = converteEstadoPosicao(1, 1, 3, 3);
 
-    // printf("entre com uma posição dos disco nas torres:\n");
-    // printf("ex: 1 1 1 1 significa que todos estão na torre 1.\n");
-    // printf("ex: 1 2 3 3 significa que o menor está na torre 1, o maior e o segundo maior na torre 3, e o outra na torre 2.\n");
-    // printf(">>>");
-    // scanf("%d %d %d %d", &estado1, &estado2, &estado3, &estado4);
-    // int posicao = converteEstadoPosicao(estado1, estado2, estado3, estado4);
-    // printf("Posicao: %d\n", posicao);
+    printf("entre com uma posição dos disco nas torres:\n");
+    printf("ex: 1 1 1 1 significa que todos estão na torre 1.\n");
+    printf("ex: 1 2 3 3 significa que o menor está na torre 1, o maior e o segundo maior na torre 3, e o outra na torre 2.\n");
+    printf(">>>");
+    scanf("%d %d %d %d", &estado1, &estado2, &estado3, &estado4);
+    int posicao = converteEstadoPosicao(estado1, estado2, estado3, estado4);
+    printf("Posicao: %d\n", posicao);
 
-    // ini = getMicrotime();
-    // dijkstra(g, g->pesos, 80, posicao, predecessores);
-    // fim = getMicrotime();
-    // printf("Tempo: %d\n", (fim - ini));
-    // mostraCaminho(80,predecessores);
+    ini = getMicrotime();
+    BellmanFord(g, g->pesos, 80, posicao, predecessores);
+    fim = getMicrotime();
+    printf("Tempo: %d\n", (fim - ini));
+    mostraCaminho(80,predecessores);
 
-    // BellmanFord(g, g->pesos, 80);
 
     return 0;
 }
